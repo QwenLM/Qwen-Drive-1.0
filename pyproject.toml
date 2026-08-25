@@ -1,0 +1,36 @@
+[project]
+name = "qwen_drive"
+version = "1.0.0"
+description = "Inference code for Qwen-Drive-1.0, a vision-language foundation model for autonomous driving."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.8.0",
+  "torchvision>=0.23.0",
+  "transformers>=5.14.0,<5.15.0",
+  "accelerate>=1.0.0",
+  "safetensors>=0.4.5",
+  "numpy>=1.24",
+  "pillow>=10.0.0",
+  "flash-attn>=2.8.0",
+  "causal-conv1d>=1.6.2",
+  "flash-linear-attention>=0.5.1",
+  "opencv-python>=4.10.0",
+  "matplotlib>=3.8.0",
+  "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+archive = ["pyarrow>=15.0"]
+oss = ["oss2>=2.18"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100

@@ -1,0 +1,66 @@
+{
+  "dataset_type": "nuplan",
+  "cam_order": [
+    "CAM_F0",
+    "CAM_R0",
+    "CAM_R1",
+    "CAM_R2",
+    "CAM_B0",
+    "CAM_L2",
+    "CAM_L1",
+    "CAM_L0"
+  ],
+  "content": [
+    {
+      "text": "<FRONT VIEW>"
+    },
+    {
+      "image": "CAM_F0"
+    },
+    {
+      "text": "<FRONT RIGHT VIEW>"
+    },
+    {
+      "image": "CAM_R0"
+    },
+    {
+      "text": "<RIGHT VIEW>"
+    },
+    {
+      "image": "CAM_R1"
+    },
+    {
+      "text": "<BACK RIGHT VIEW>"
+    },
+    {
+      "image": "CAM_R2"
+    },
+    {
+      "text": "<BACK VIEW>"
+    },
+    {
+      "image": "CAM_B0"
+    },
+    {
+      "text": "<BACK LEFT VIEW>"
+    },
+    {
+      "image": "CAM_L2"
+    },
+    {
+      "text": "<LEFT VIEW>"
+    },
+    {
+      "image": "CAM_L1"
+    },
+    {
+      "text": "<FRONT LEFT VIEW>"
+    },
+    {
+      "image": "CAM_L0"
+    },
+    {
+      "text": "Analyze the current driving scene."
+    }
+  ]
+}
