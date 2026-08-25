@@ -11,7 +11,7 @@
 <p align="center">
   📑 <a href="#citation">Technical Report</a> &nbsp;|&nbsp;
   📖 <a href="#">Blog</a> &nbsp;|&nbsp;
-  🤗 <a href="#">Hugging Face</a> &nbsp;|&nbsp;
+  🤗 <a href="https://huggingface.co/Qwen/Qwen-Drive-1.0-4B">Hugging Face</a> &nbsp;|&nbsp;
   🤖 <a href="#">ModelScope</a>
 </p>
 
