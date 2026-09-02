@@ -20,7 +20,7 @@
 </p>
 
 Welcome to the GitHub repository of Qwen-Drive-1.0. Here you can find official information about
-Qwen-Drive, post your questions (Issues).
+Qwen-Drive, and post your questions (Issues).
 
 ## Introduction
 
@@ -35,7 +35,7 @@ external modules attached:
   structure.
 - A **Planning Expert** conditions on shared VLM representations to generate future ego
   trajectories.
-- The **original VLM's LLM Decoder** keeps unchanged, and can handle both General VQA and Driving VQA tasks.
+- The **original VLM's LLM Decoder** remains unchanged, and can handle both General VQA and Driving VQA tasks.
 
 We propose a staged training strategy that integrates perception, language, and planning objectives. By combining driving-specific supervision with general-purpose vision-language data, the model achieves specialized driving competence while retaining broad visual understanding and instruction-following capabilities. This approach is supported by a unified data pipeline that: (1) maps heterogeneous perception annotations into a shared label space; (2) re-annotates driving VQA responses to ensure format and factual consistency; and (3) standardizes trajectories from multiple public driving datasets into a unified waypoint representation.
 
@@ -144,18 +144,18 @@ A GPU with 24 GB+ of memory is recommended.
 ```bash
 git clone <repository-url> qwen-drive && cd qwen-drive
 
-# any Python virtual environment works, conda is shown here
+# Any Python virtual environment works; conda is shown here
 conda create -n qwen-drive python=3.10
 conda activate qwen-drive
 
-pip install -e . --no-build-isolation        # or: pip install -r requirements.txt
+pip install -e. --no-build-isolation        # or: pip install -r requirements.txt
 ```
 
 ## Quick start
 
 `data/demo/` bundles four WOD-E2E planning scenes with their frames in one Parquet file and
 six perception frames, so the commands below need nothing but the weights. The scenes cover
-a night intersection whose light turns green, a left turn, a right turn and a slow-down past
+a night intersection whose light turns green, a left turn, a right turn, and a slow-down past
 a parked truck.
 
 `scripts/demo.py --plot` writes a summary figure: the camera ring of the scene on the left,
@@ -222,7 +222,7 @@ qwen-drive/
 
 ## Citation
 
-If you find our work helpful, feel free to give us a cite.
+If you find our work helpful, feel free to cite us.
 
 ```bibtex
 @article{qwendrive2026,
