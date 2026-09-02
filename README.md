@@ -1,4 +1,4 @@
-<p align="center">
+<img width="1176" height="753" alt="image" src="https://github.com/user-attachments/assets/2909ae57-3011-4a9f-8bfd-5381689dac7c" /><p align="center">
   <img src="assets/logo.png" alt="Qwen-Drive" width="420">
 </p>
 
@@ -225,12 +225,14 @@ qwen-drive/
 If you find our work helpful, feel free to cite us.
 
 ```bibtex
-@article{qwendrive2026,
-  title  = {Qwen-Drive-1.0: An Initial Step towards a Vision-Language Foundation Model
-            for Autonomous Driving},
-  author = {Zhou, Xin and Zhao, Zongchuang and Yang, Zhibo and Li, Mingsheng and Zhong, Humen and Bai, Shuai and Chu, Du and Chen, Ruizhe and Li, Zhaohai and Tang, Jun and Wang, Qiuyue and Yang, Mingkun and Zhang, Jiazhao and Liu, Dayiheng and Liang, Dingkang and Bai, Xiang}
-  journal={arXiv preprint arXiv:xxxx.xxxxx},
-  year   = {2026}
+@misc{zhou2026qwendrive10initialstepvisionlanguage,
+      title={Qwen-Drive-1.0: An Initial Step towards a Vision-Language Foundation Model for Autonomous Driving}, 
+      author={Xin Zhou and Zongchuang Zhao and Zhibo Yang and Mingsheng Li and Humen Zhong and Shuai Bai and Du Chu and Ruizhe Chen and Zhaohai Li and Jun Tang and Qiuyue Wang and Mingkun Yang and Jiazhao Zhang and Dayiheng Liu and Dingkang Liang and Xiang Bai},
+      year={2026},
+      eprint={2609.00111},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2609.00111}, 
 }
 ```
 
