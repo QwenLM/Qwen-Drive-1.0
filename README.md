@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  📑 <a href="#citation">Technical Report</a> &nbsp;|&nbsp;
-  📖 <a href="#">Blog</a> &nbsp;|&nbsp;
+  📑 <a href="https://arxiv.org/abs/2609.00111">Technical Report</a> &nbsp;|&nbsp;
+  📖 <a href="https://qwen.ai/research">Blog</a> &nbsp;|&nbsp;
   🤗 <a href="https://huggingface.co/Qwen/Qwen-Drive-1.0-4B">Hugging Face</a> &nbsp;|&nbsp;
-  🤖 <a href="#">ModelScope</a>
+  🤖 <a href="https://modelscope.cn/models/Qwen/Qwen-Drive-1.0-4B">ModelScope</a>
 </p>
 
 <p align="center">
