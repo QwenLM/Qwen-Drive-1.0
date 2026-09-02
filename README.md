@@ -1,5 +1,5 @@
-<img width="1176" height="753" alt="image" src="https://github.com/user-attachments/assets/2909ae57-3011-4a9f-8bfd-5381689dac7c" /><p align="center">
-  <img src="assets/logo.png" alt="Qwen-Drive" width="420">
+
+<img src="assets/logo.png" alt="Qwen-Drive" width="420">
 </p>
 
 <h3 align="center">An Initial Step towards a Vision-Language Foundation Model for Autonomous Driving</h3>
