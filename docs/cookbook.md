@@ -104,29 +104,32 @@ scene = DrivingScene(
 
 ## Running a benchmark split
 
-The four benchmark scene files ship under `data/benchmarks/`. They reference frames by
-paths relative to each source dataset, so obtain the frames from the dataset provider (see
-[data.md](data.md)) and point `--image-root` at them.
+The benchmark scene files are not shipped with the repository. Build the one for your
+split from the dataset's official validation/test data as described in
+[data.md](data.md#building-the-validation-scene-files) (record format and trajectory
+processing), obtain the camera frames from the dataset provider (see
+[data.md](data.md#obtaining-the-camera-frames)), then predict and score:
 
 ```bash
 # 1. predict
 python scripts/run_planning.py --model Qwen-Drive-1.0-4B \
     --planner Qwen-Drive-1.0-4B/planner-rl \
-    --scenes data/benchmarks/physical_ai_test700.jsonl \
-    --image-root /data/physical_ai/frames \
-    --output outputs/physical_ai/predictions.jsonl \
+    --scenes <SCENES_JSONL> \
+    --image-root <IMAGE_ROOT> \
+    --output outputs/<SPLIT_NAME>/predictions.jsonl \
     --mode reasoning_planning --num-samples 6
 
 # 2. score
-python scripts/eval_physical_ai.py --predictions outputs/physical_ai/predictions.jsonl
+python scripts/eval_navsim.py       --predictions outputs/<SPLIT_NAME>/predictions.jsonl  # NAVSIM navtest
+python scripts/eval_waymo.py        --predictions outputs/<SPLIT_NAME>/predictions.jsonl  # Waymo E2E validation
+python scripts/eval_physical_ai.py  --predictions outputs/<SPLIT_NAME>/predictions.jsonl  # NVIDIA PhysicalAI test
 ```
 
-| Split | Scenes | Scoring |
-| --- | --- | --- |
-| `data/benchmarks/navsim_navtest.jsonl` | 12146 | Displacement errors standalone. The PDM score needs the NAVSIM package, nuPlan maps and a metric cache |
-| `data/benchmarks/waymo_e2e_val.jsonl` | 479 | Displacement errors standalone. The rater feedback score needs the Waymo Open Dataset metrics |
-| `data/benchmarks/physical_ai_test700.jsonl` | 700 | Standalone |
-| `data/benchmarks/physical_ai_gold644.jsonl` | 644 | Standalone |
+| Split | Scoring |
+| --- | --- |
+| NAVSIM navtest | Displacement errors standalone. The PDM score needs the NAVSIM package, nuPlan maps and a metric cache |
+| Waymo E2E validation | Displacement errors standalone. The rater feedback score needs the Waymo Open Dataset metrics |
+| NVIDIA PhysicalAI test | Standalone |
 
 Each record keeps only what the pipeline consumes: the prompt with its camera frames, the
 ego history and future series, and `token` with `scene_token`. One scene file serves both
@@ -142,13 +145,13 @@ concatenate the per-shard files:
 for gpu in 0 1 2 3; do
   CUDA_VISIBLE_DEVICES=$gpu python scripts/run_planning.py \
       --model Qwen-Drive-1.0-4B --planner Qwen-Drive-1.0-4B/planner-rl \
-      --scenes data/benchmarks/navsim_navtest.jsonl \
-      --image-root /data/navsim --output outputs/navsim/pred_$gpu.jsonl \
+      --scenes <SCENES_JSONL> \
+      --image-root <IMAGE_ROOT> --output outputs/<SPLIT_NAME>/pred_$gpu.jsonl \
       --num-shards 4 --shard-index $gpu &
 done
 wait
-cat outputs/navsim/pred_*.jsonl > outputs/navsim/predictions.jsonl
-python scripts/eval_navsim.py --predictions outputs/navsim/predictions.jsonl
+cat outputs/<SPLIT_NAME>/pred_*.jsonl > outputs/<SPLIT_NAME>/predictions.jsonl
+python scripts/eval_navsim.py --predictions outputs/<SPLIT_NAME>/predictions.jsonl
 ```
 
 ## Packing frames for faster loading
@@ -157,15 +160,16 @@ Twelve small image reads per scene dominate wall clock on network storage. Pack 
 into memory-mappable Parquet shards, see [data.md](data.md#packing-frames-for-faster-loading)
 for what the archive holds.
 
+
 ```bash
-python scripts/pack_images.py --scenes data/benchmarks/waymo_e2e_val.jsonl \
-    --image-root /data/waymo_e2e/extracted/images --output archives/waymo_e2e_val
-python scripts/run_planning.py ... --image-archive archives/waymo_e2e_val
+python scripts/pack_images.py --scenes <SCENES_JSONL> \
+    --image-root <IMAGE_ROOT> --output archives/<SPLIT_NAME>
+python scripts/run_planning.py ... --image-archive archives/<SPLIT_NAME>
 ```
 
 ## Perception
 
-3D detection, occupancy and BEV map segmentation from the surround camera ring.
+3D detection, occupancy, and BEV map segmentation from the surround camera ring.
 
 ```bash
 python scripts/run_perception.py \
