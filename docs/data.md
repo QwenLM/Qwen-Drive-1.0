@@ -6,11 +6,14 @@ copy of that dataset.
 
 ## Bundled files
 
-The repository ships the four benchmark scene files under `data/benchmarks/` and a runnable
-demo under `data/demo/`, which holds four WOD-E2E validation scenes with their frames packed
-into `frames.parquet` plus six self-contained perception frames under `perception/`. Benchmark
-scene files reference frames relative to each dataset's frame root. The demo files use
-paths relative to `data/demo/` itself.
+The repository ships a runnable demo under `data/demo/`, which holds four WOD-E2E
+validation scenes with their frames packed into `frames.parquet` plus six self-contained
+perception frames under `perception/`. The demo files use paths relative to `data/demo/`
+itself.
+The benchmark scene files are not shipped. Each is built from the official validation
+split of its dataset, see [building the validation scene
+files](#building-the-validation-scene-files), and references frames relative to that
+dataset's frame root.
 
 ## Scene record
 
@@ -71,9 +74,34 @@ that origin row and normalizes by the per-channel scale in the model config.
 The ego status handed to the expert is the eight numbers
 `[vx, vy, ax, ay, *driving_command]`, in that order.
 
+## Trajectory sources
+The 10 Hz trajectories in the scene files come from each dataset's raw data:
+- **NAVSIM**: read from the original nuPlan data (pkl) at 10 Hz. The
+  acceleration series is de-glitched with the official nuPlan Savitzky-Golay
+  filter to remove spikes and drift, headings are wrapped to `[-pi, pi]`, and
+  records whose yaw rate exceeds 1.2 rad/s or acceleration exceeds 1 g are
+  rejected.
+- **NVIDIA PhysicalAI**: read directly from the raw data at 10 Hz via the
+  official egomotion interpolator, so acceleration comes from the
+  interpolator itself instead of pose differentiation and carries no
+  integration drift. Headings are wrapped to `[-pi, pi]` and the same yaw
+  rate / acceleration guards apply.
+- **Waymo Open Dataset end-to-end**: the raw metadata only carries the ego
+  trajectory at 4 Hz (16 history points over 1.5 s, 20 future points over
+  5 s), which is resampled to the 10 Hz fields above. Positions are fit with
+  a cubic spline over the raw 4 Hz points (natural boundary for the future,
+  anchored at the current pose) and evaluated on the 10 Hz grid. History
+  headings come from the velocity direction, linearly interpolated to 10 Hz;
+  future headings integrate the curvature of the position spline directly on
+  the 10 Hz grid rather than interpolating a coarser 4 Hz heading curve.
+  Velocities and accelerations are linearly resampled and rotated into the
+  body frame of each heading. The interpolation function is
+  [scripts/interpolate_waymo_trajectory.py](../scripts/interpolate_waymo_trajectory.py).
+
+
 ## Obtaining the camera frames
 
-### NAVSIM (`navsim_navtest.jsonl`)
+### NAVSIM
 
 Frame paths look like `test/<log>/<CAM>/<token>.jpg`, the layout of NAVSIM's sensor blobs.
 Download the OpenScene and NAVSIM test sensor blobs following the
@@ -82,7 +110,7 @@ at the directory containing `test/`.
 
 Cameras used: `CAM_F0` (front), `CAM_L0` (front-left), `CAM_R0` (front-right).
 
-### Waymo Open Dataset end-to-end (`waymo_e2e_val.jsonl`)
+### Waymo Open Dataset end-to-end
 
 Frame paths look like `val/<context_name>/<CAMERA>/<frame>.jpg`. Download the
 [end-to-end driving dataset](https://waymo.com/open/) and extract the camera images per
@@ -90,7 +118,7 @@ context, camera and frame index. Point `--image-root` at the directory containin
 
 Cameras used: `FRONT`, `FRONT_LEFT`, `FRONT_RIGHT`.
 
-### NVIDIA PhysicalAI (`physical_ai_test700.jsonl`, `physical_ai_gold644.jsonl`)
+### NVIDIA PhysicalAI
 
 Frame paths look like `<clip_id>/<camera>/<frame>.jpg`, where `<frame>` is a zero-padded
 frame **index into that clip's camera video**. This dataset ships videos rather than
@@ -122,11 +150,10 @@ frames, so decoded pixels are unchanged.
 
 ```bash
 python scripts/pack_images.py \
-    --scenes data/benchmarks/waymo_e2e_val.jsonl \
-    --image-root /data/waymo_e2e/extracted/images \
-    --output archives/waymo_e2e_val
-
-python scripts/run_planning.py ... --image-archive archives/waymo_e2e_val
+    --scenes <SCENES_JSONL> \
+    --image-root <IMAGE_ROOT> \
+    --output archives/<SPLIT_NAME>
+python scripts/run_planning.py ... --image-archive archives/<SPLIT_NAME>
 ```
 
 ## Reading frames from somewhere else
@@ -140,12 +167,36 @@ module:factory` imports a factory returning such a callable.
 python scripts/run_planning.py ... --image-resolver my_storage:make_reader
 ```
 
+## Building the validation scene files
+Each benchmark scene file is a JSON-lines file derived from the official validation (or
+test) split of its dataset, one record per planning query in the scene format above.
+Every record needs:
+- the three camera views at four timestamps, i.e. 1.5 s of history at 2 Hz
+  plus the current frame, oldest to newest, referenced by paths relative to
+  the dataset frame root
+- the 10 Hz trajectory fields, i.e. 1.5 s history and 5 s future with their
+  velocities and accelerations, the ego status and the navigation command,
+  processed from the raw data as described under [trajectory
+  sources](#trajectory-sources)
+- `dataset`, `token` (the query) and `scene_token` (its scene) under `meta_info`, plus
+  `cam_order` with the view tags in frame order
+Per dataset, the validation queries are:
+- **NAVSIM**: the keyframes of the official navtest split.
+- **Waymo Open Dataset end-to-end**: only the validation samples that carry a
+  human reference trajectory are evaluated. The 4 Hz raw trajectories are
+  resampled with
+  [scripts/interpolate_waymo_trajectory.py](../scripts/interpolate_waymo_trajectory.py).
+- **NVIDIA PhysicalAI**: the keyframes of the clips listed in
+  [alpamayo-recipes](https://github.com/NVlabs/alpamayo-recipes). The
+  trajectories are read directly from the raw data.
+
+
 ## Preparing your own scene file
 
 To evaluate on your own data, write a scene file in the format above: image paths relative
 to a frame root you pass as `--image-root`, the ego history and future series under
 `trajectory`, and `token` with `scene_token` under `meta_info`. Building `DrivingScene`
-objects directly in Python skips the file format entirely, see [cookbook.md](cookbook.md).
+objects directly in Python skips the file format entirely; see [cookbook.md](cookbook.md).
 
 ## Image preprocessing
 
